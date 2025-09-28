@@ -98,15 +98,23 @@ const candidatesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchCandidates.fulfilled, (state, action) => {
-        state.candidates = action.payload.map((candidate: any) => ({
-          ...candidate,
-          id: candidate._id || candidate.id
-        }));
+        // Handle case where API returns error or non-array data
+        if (Array.isArray(action.payload)) {
+          state.candidates = action.payload.map((candidate: any) => ({
+            ...candidate,
+            id: candidate._id || candidate.id
+          }));
+        } else {
+          console.warn('API returned non-array data:', action.payload);
+          state.candidates = [];
+        }
         state.loading = false;
       })
       .addCase(createCandidate.fulfilled, (state, action) => {
         const candidate = action.payload;
-        state.candidates.push({ ...candidate, id: candidate._id || candidate.id });
+        if (candidate && (candidate._id || candidate.id)) {
+          state.candidates.push({ ...candidate, id: candidate._id || candidate.id });
+        }
         state.loading = false;
       })
       .addCase(addAnswerToCandidate.fulfilled, (state, action) => {
