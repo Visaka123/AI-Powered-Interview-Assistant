@@ -53,11 +53,35 @@ const App: React.FC = () => {
     };
 
     console.log('🚀 Creating candidate with data:', candidateData);
-    const result = await dispatch(createCandidate(candidateData));
-    const candidate = result.payload;
-    console.log('💾 Backend returned candidate:', candidate);
-    console.log('🎯 Starting interview with candidate ID:', candidate._id || candidate.id);
-    dispatch(startInterview(candidate));
+    
+    try {
+      const result = await dispatch(createCandidate(candidateData));
+      const candidate = result.payload;
+      
+      if (candidate && (candidate._id || candidate.id)) {
+        console.log('💾 Backend returned candidate:', candidate);
+        console.log('🎯 Starting interview with candidate ID:', candidate._id || candidate.id);
+        dispatch(startInterview(candidate));
+      } else {
+        console.error('❌ Invalid candidate response:', candidate);
+        // Fallback: create local candidate
+        const localCandidate = {
+          ...candidateData,
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString()
+        };
+        dispatch(startInterview(localCandidate));
+      }
+    } catch (error) {
+      console.error('❌ Failed to create candidate:', error);
+      // Fallback: create local candidate
+      const localCandidate = {
+        ...candidateData,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+      };
+      dispatch(startInterview(localCandidate));
+    }
   };
 
   const tabItems = [
