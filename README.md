@@ -4,7 +4,7 @@ A comprehensive React application that serves as an AI-powered interview assista
 
 ## 🚀 Live Demo
 
-**[View Live Application](https://your-demo-url.vercel.app)**
+**[View Live Application](https://ai-powered-interview-assistant-mp2cwq4y3.vercel.app)**
 
 ## 📋 Project Overview
 
@@ -92,8 +92,8 @@ InterviewAI Pro is a full-stack application that automates technical interviews 
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/ai-interview-assistant.git
-cd ai-interview-assistant
+git clone https://github.com/Visaka123/AI-Powered-Interview-Assistant.git
+cd AI-Powered-Interview-Assistant
 ```
 
 2. **Install frontend dependencies**
@@ -315,9 +315,9 @@ GROQ_API_KEY=gsk_your_actual_api_key_here
 ## 📞 Support
 
 For questions or issues:
-- **Email**: your-email@example.com
-- **GitHub Issues**: [Create an issue](https://github.com/yourusername/ai-interview-assistant/issues)
-- **Documentation**: [Wiki](https://github.com/yourusername/ai-interview-assistant/wiki)
+- **Email**: visakavisaka2705@gmail.com
+- **GitHub Issues**: [Create an issue](https://github.com/Visaka123/AI-Powered-Interview-Assistant/issues)
+- **Documentation**: [Wiki](https://github.com/Visaka123/AI-Powered-Interview-Assistant/wiki)
 
 ## 📄 License
 
@@ -333,6 +333,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ by [Your Name]**
+**Built with ❤️ by VISAKA P**
 
 **⭐ Star this repo if you found it helpful!**
