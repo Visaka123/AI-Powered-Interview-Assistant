@@ -19,18 +19,19 @@ app.use(cors({
     'https://ai-powered-interview-assistant-six.vercel.app',
     'https://ai-powered-interview-assistant-63mh1rst7.vercel.app',
     'https://ai-powered-interview-assistant-5q5x2p8nz.vercel.app',
+    'https://ai-powered-interview-assistant-g7zflgcq1.vercel.app',
     process.env.FRONTEND_URL
   ].filter(Boolean),
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
-});
-app.use('/api/', limiter);
+// Rate limiting - temporarily disabled
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 100 // limit each IP to 100 requests per windowMs
+// });
+// app.use('/api/', limiter);
 
 // MongoDB connection
 console.log('🔍 MongoDB URI:', process.env.MONGODB_URI ? 'Found in .env' : 'Using default localhost');
