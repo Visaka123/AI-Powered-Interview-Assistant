@@ -20,6 +20,7 @@ app.use(cors({
     'https://ai-powered-interview-assistant-63mh1rst7.vercel.app',
     'https://ai-powered-interview-assistant-5q5x2p8nz.vercel.app',
     'https://ai-powered-interview-assistant-g7zflgcq1.vercel.app',
+    'https://ai-powered-interview-assistant-1ry3hcij3.vercel.app',
     process.env.FRONTEND_URL
   ].filter(Boolean),
   credentials: true
