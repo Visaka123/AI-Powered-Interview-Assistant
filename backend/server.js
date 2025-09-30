@@ -66,6 +66,20 @@ app.use('/api/candidates', require('./routes/candidates'));
 app.use('/api/interviews', require('./routes/interviews'));
 app.use('/api/ai', require('./routes/ai'));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'AI Interview Assistant API', 
+    status: 'Running',
+    endpoints: {
+      health: '/api/health',
+      candidates: '/api/candidates',
+      interviews: '/api/interviews',
+      ai: '/api/ai'
+    }
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });

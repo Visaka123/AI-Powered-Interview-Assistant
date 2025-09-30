@@ -11,7 +11,7 @@ const initialState: CandidatesState = {
   loading: false
 };
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://scintillating-intuition-production-ed4c.up.railway.app/api';
 
 // Async thunks for backend API calls
 export const createCandidate = createAsyncThunk(
