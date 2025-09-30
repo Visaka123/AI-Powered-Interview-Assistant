@@ -61,23 +61,23 @@ const App: React.FC = () => {
       if (candidate && (candidate._id || candidate.id)) {
         console.log('💾 Backend returned candidate:', candidate);
         console.log('🎯 Starting interview with candidate ID:', candidate._id || candidate.id);
-        dispatch(startInterview(candidate));
+        dispatch(startInterview({ ...candidate, id: candidate._id || candidate.id }));
       } else {
-        console.error('❌ Invalid candidate response:', candidate);
+        console.warn('⚠️ Backend unavailable, using local mode');
         // Fallback: create local candidate
         const localCandidate = {
           ...candidateData,
-          id: Date.now().toString(),
+          id: `local_${Date.now()}`,
           createdAt: new Date().toISOString()
         };
         dispatch(startInterview(localCandidate));
       }
     } catch (error) {
-      console.error('❌ Failed to create candidate:', error);
+      console.warn('⚠️ Backend connection failed, using local mode:', error instanceof Error ? error.message : error);
       // Fallback: create local candidate
       const localCandidate = {
         ...candidateData,
-        id: Date.now().toString(),
+        id: `local_${Date.now()}`,
         createdAt: new Date().toISOString()
       };
       dispatch(startInterview(localCandidate));

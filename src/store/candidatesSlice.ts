@@ -38,6 +38,13 @@ export const addAnswerToCandidate = createAsyncThunk(
   'candidates/addAnswer',
   async ({ candidateId, answer }: { candidateId: string; answer: Answer }) => {
     console.log('🔍 Adding answer for candidate ID:', candidateId);
+    
+    // Skip backend call for local candidates
+    if (candidateId.startsWith('local_')) {
+      console.log('💾 Local candidate, skipping backend call');
+      return { candidateId, answer, isLocal: true };
+    }
+    
     const response = await fetch(`${API_BASE_URL}/candidates/${candidateId}/answers`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -55,6 +62,12 @@ export const addAnswerToCandidate = createAsyncThunk(
 export const completeInterviewBackend = createAsyncThunk(
   'candidates/complete',
   async ({ candidateId, score, summary }: { candidateId: string; score: number; summary: string }) => {
+    // Skip backend call for local candidates
+    if (candidateId.startsWith('local_')) {
+      console.log('📝 Local candidate, skipping backend call');
+      return { candidateId, score, summary, isLocal: true };
+    }
+    
     const response = await fetch(`${API_BASE_URL}/candidates/${candidateId}/complete`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -118,18 +131,44 @@ const candidatesSlice = createSlice({
         state.loading = false;
       })
       .addCase(addAnswerToCandidate.fulfilled, (state, action) => {
-        const candidate = action.payload;
-        const index = state.candidates.findIndex(c => c.id === (candidate._id || candidate.id));
-        if (index !== -1) {
-          state.candidates[index] = { ...candidate, id: candidate._id || candidate.id };
+        const payload = action.payload;
+        
+        if (payload.isLocal) {
+          // Handle local candidate
+          const candidate = state.candidates.find(c => c.id === payload.candidateId);
+          if (candidate) {
+            candidate.answers.push(payload.answer);
+            candidate.currentQuestionIndex = candidate.answers.length;
+          }
+        } else {
+          // Handle backend candidate
+          const candidate = payload;
+          const index = state.candidates.findIndex(c => c.id === (candidate._id || candidate.id));
+          if (index !== -1) {
+            state.candidates[index] = { ...candidate, id: candidate._id || candidate.id };
+          }
         }
         state.loading = false;
       })
       .addCase(completeInterviewBackend.fulfilled, (state, action) => {
-        const candidate = action.payload;
-        const index = state.candidates.findIndex(c => c.id === (candidate._id || candidate.id));
-        if (index !== -1) {
-          state.candidates[index] = { ...candidate, id: candidate._id || candidate.id };
+        const payload = action.payload;
+        
+        if (payload.isLocal) {
+          // Handle local candidate
+          const candidate = state.candidates.find(c => c.id === payload.candidateId);
+          if (candidate) {
+            candidate.status = 'completed';
+            candidate.score = payload.score;
+            candidate.summary = payload.summary;
+            candidate.completedAt = new Date().toISOString();
+          }
+        } else {
+          // Handle backend candidate
+          const candidate = payload;
+          const index = state.candidates.findIndex(c => c.id === (candidate._id || candidate.id));
+          if (index !== -1) {
+            state.candidates[index] = { ...candidate, id: candidate._id || candidate.id };
+          }
         }
         state.loading = false;
       })

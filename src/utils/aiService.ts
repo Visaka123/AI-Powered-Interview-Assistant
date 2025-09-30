@@ -57,7 +57,7 @@ export class AIService {
     console.log(`🤖 Generating AI question ${questionIndex + 1}/6 via backend...`);
     
     try {
-      const response = await fetch('http://localhost:5000/api/ai/generate-question', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/ai/generate-question`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ questionIndex, candidateData, previousAnswers })
@@ -159,7 +159,7 @@ export class AIService {
       // Try Backend AI Evaluation First
       console.log('🤖 Using backend AI evaluation...');
       
-      const response = await fetch('http://localhost:5000/api/ai/evaluate-answer', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/ai/evaluate-answer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question, answer, timeSpent })
@@ -176,7 +176,7 @@ export class AIService {
       // Try Backend AI Evaluation
       try {
         console.log('🤖 Using backend AI evaluation...');
-        const response = await fetch('http://localhost:5000/api/ai/evaluate-answer', {
+        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/ai/evaluate-answer`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question, answer, timeSpent })
