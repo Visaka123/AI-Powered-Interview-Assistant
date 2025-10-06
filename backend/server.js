@@ -8,6 +8,13 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Environment validation
+console.log('🔍 Environment Check:');
+console.log('- PORT:', PORT);
+console.log('- NODE_ENV:', process.env.NODE_ENV || 'development');
+console.log('- MONGODB_URI:', process.env.MONGODB_URI ? '✅ Set' : '❌ Missing');
+console.log('- GROQ_API_KEY:', process.env.GROQ_API_KEY ? '✅ Set' : '❌ Missing');
+
 // Trust proxy for Railway deployment
 app.set('trust proxy', 1);
 
@@ -21,6 +28,7 @@ app.use(cors({
     'https://ai-powered-interview-assistant-5q5x2p8nz.vercel.app',
     'https://ai-powered-interview-assistant-g7zflgcq1.vercel.app',
     'https://ai-powered-interview-assistant-1ry3hcij3.vercel.app',
+    'https://ai-powered-interview-assistant-mp2cwq4y3.vercel.app',
     process.env.FRONTEND_URL
   ].filter(Boolean),
   credentials: true
@@ -35,30 +43,18 @@ app.use(express.json({ limit: '10mb' }));
 // app.use('/api/', limiter);
 
 // MongoDB connection
-console.log('🔍 MongoDB URI:', process.env.MONGODB_URI ? 'Found in .env' : 'Using default localhost');
-console.log('🔗 Connecting to:', process.env.MONGODB_URI || 'mongodb://localhost:27017/ai-interview');
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://interview-user:interview123@cluster0.mongodb.net/ai-interview?retryWrites=true&w=majority';
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ai-interview', {
+console.log('🔗 Connecting to MongoDB...');
+
+mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
-  ssl: true,
-  tlsAllowInvalidCertificates: true,
-  tlsAllowInvalidHostnames: true
+  useUnifiedTopology: true
 }).then(() => {
-  console.log('✅ MongoDB connection successful!');
+  console.log('✅ MongoDB connected successfully!');
 }).catch((err) => {
   console.error('❌ MongoDB connection failed:', err.message);
-  // Try without SSL as fallback
-  console.log('🔄 Trying connection without SSL...');
-  mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ai-interview', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    ssl: false
-  }).then(() => {
-    console.log('✅ MongoDB connected without SSL!');
-  }).catch((fallbackErr) => {
-    console.error('❌ All connection attempts failed:', fallbackErr.message);
-  });
+  console.log('⚠️ Server will continue without database...');
 });
 
 // Routes
@@ -85,17 +81,39 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({ error: 'Route not found' });
 });
 
-app.listen(PORT, () => {
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('❌ Error:', err.message);
+  res.status(err.status || 500).json({ 
+    error: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message 
+  });
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('🛑 SIGTERM received, shutting down gracefully');
+  mongoose.connection.close(() => {
+    console.log('📊 MongoDB connection closed');
+    process.exit(0);
+  });
+});
+
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
   
   // Check MongoDB connection status after a brief delay
   setTimeout(() => {
-    console.log(`📊 MongoDB connected: ${mongoose.connection.readyState === 1 ? 'Yes' : 'No'}`);
-  }, 2000);
+    const dbStatus = mongoose.connection.readyState === 1 ? '✅ Connected' : '❌ Disconnected';
+    console.log(`📊 MongoDB: ${dbStatus}`);
+  }, 3000);
 });
+
+server.keepAliveTimeout = 120000;
+server.headersTimeout = 120000;

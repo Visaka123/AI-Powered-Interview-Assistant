@@ -66,8 +66,8 @@ router.post('/:id/answers', async (req, res) => {
     
     // Validate required fields
     const { questionId, question, answer, timeSpent, maxTime, difficulty } = req.body;
-    if (!questionId || !question || answer === undefined || timeSpent === undefined || !maxTime || !difficulty) {
-      console.log('❌ Missing required fields:', { questionId, question, answer: answer !== undefined, timeSpent: timeSpent !== undefined, maxTime, difficulty });
+    if (!questionId || !question || !answer || timeSpent === undefined || !maxTime || !difficulty) {
+      console.log('❌ Missing required fields:', { questionId, question, answer, timeSpent: timeSpent !== undefined, maxTime, difficulty });
       return res.status(400).json({ error: 'Missing required fields' });
     }
     

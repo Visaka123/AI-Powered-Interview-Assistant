@@ -140,7 +140,7 @@ const InterviewChat: React.FC = () => {
     const answerObj: Answer = {
       questionId: currentQuestion!.id,
       question: currentQuestion!.text,
-      answer: answer.trim() || '',
+      answer: answer.trim() || '(No answer provided - time expired)',
       timeSpent: currentQuestion!.maxTime,
       maxTime: currentQuestion!.maxTime,
       score: 0,
